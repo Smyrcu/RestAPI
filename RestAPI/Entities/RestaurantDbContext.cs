@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace RestAPI.Entities
@@ -13,9 +14,19 @@ namespace RestAPI.Entities
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Dish> Dishes { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .Property(u => u.Email)
+                .IsRequired();
+
+            modelBuilder.Entity<Role>()
+                .Property(u => u.Name)
+                .IsRequired();
+
             modelBuilder.Entity<Restaurant>()
                 .Property(r => r.Name)
                 .IsRequired()
@@ -34,7 +45,6 @@ namespace RestAPI.Entities
                 .Property(a => a.Street)
                 .IsRequired()
                 .HasMaxLength(50);
-
 
         }
 
