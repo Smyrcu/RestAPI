@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +29,7 @@ namespace RestAPI.Controllers
         public ActionResult Update([FromRoute] int id, [FromBody]UpdateRestaurantDto dto)
         {
 
-            _restaurantService.Update(id, dto);
+            _restaurantService.Update(id, dto, User);
 
             return Ok();
         }
@@ -36,7 +37,7 @@ namespace RestAPI.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute]int id)
         {
-            _restaurantService.Delete(id);
+            _restaurantService.Delete(id, User);
 
             return NoContent();
         }
@@ -45,13 +46,14 @@ namespace RestAPI.Controllers
         [Authorize(Roles = "Admin,Manager")]
         public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto dto)
         {
-            var id = _restaurantService.Create(dto);
+            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            var id = _restaurantService.Create(dto, userId);
 
             return Created($"/api/restaurant/{id}",null);
         }
 
         [HttpGet]
-        [Authorize(Policy = "HasNationality")]
+        [Authorize(Policy = "AtLeast20")]
         public ActionResult<IEnumerable<RestaurantDto>> GetAll()
         {
             var restaurantsDtos = _restaurantService.GetAll();
