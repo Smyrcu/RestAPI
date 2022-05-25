@@ -15,6 +15,8 @@ namespace RestAPI.Controllers
     public class FileController : ControllerBase
     {
         [HttpGet]
+        [Authorize]
+        [ResponseCache(Duration = 1200, VaryByQueryKeys = new []{"fileName"})]
         public ActionResult GetFile([FromQuery] string fileName)
         {
             var rootPath = Directory.GetCurrentDirectory();
